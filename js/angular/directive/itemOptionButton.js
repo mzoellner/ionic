@@ -1,6 +1,10 @@
+var ITEM_TPL_OPTION_BUTTONS_LEFT =
+  '<div class="item-options invisible left">' +
+  '</div>';
 var ITEM_TPL_OPTION_BUTTONS =
   '<div class="item-options invisible">' +
   '</div>';
+
 /**
 * @ngdoc directive
 * @name ionOptionButton
@@ -27,26 +31,33 @@ var ITEM_TPL_OPTION_BUTTONS =
 * </ion-list>
 * ```
 */
-IonicModule
-.directive('ionOptionButton', ['$compile', function($compile) {
-  function stopPropagation(e) {
-    e.stopPropagation();
-  }
+
+IonicModule.directive('ionOptionButton', ['$compile', function($compile) {
   return {
     restrict: 'E',
     require: '^ionItem',
     priority: Number.MAX_VALUE,
     compile: function($element, $attr) {
+
       $attr.$set('class', ($attr['class'] || '') + ' button', true);
       return function($scope, $element, $attr, itemCtrl) {
-        if (!itemCtrl.optionsContainer) {
-          itemCtrl.optionsContainer = jqLite(ITEM_TPL_OPTION_BUTTONS);
-          itemCtrl.$element.append(itemCtrl.optionsContainer);
+        v
+        if($element.hasClass('.left-hidden')){
+          if (!itemCtrl.leftOptionsContainer) {
+            itemCtrl.leftOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS_LEFT);
+            itemCtrl.$element.prepend(itemCtrl.optionsContainer);
+          }
+          itemCtrl.leftOptionsContainer.append($element);
+        }else{
+          if (!itemCtrl.rightOptionsContainer) {
+            itemCtrl.rightOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS);
+            itemCtrl.$element.append(itemCtrl.optionsContainer);
+          }
+          itemCtrl.rightOptionsContainer.append($element);
         }
-        itemCtrl.optionsContainer.append($element);
-
-        //Don't bubble click up to main .item
-        $element.on('click', stopPropagation);
+        $element.on('click',function(e){
+          e.stopPropagation();
+        });
       };
     }
   };

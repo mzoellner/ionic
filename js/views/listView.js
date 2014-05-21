@@ -57,17 +57,20 @@
     offsetX = parseFloat(content.style[ionic.CSS.TRANSFORM].replace('translate3d(', '').split(',')[0]) || 0;
 
     // Grab the buttons
-    buttons = content.parentNode.querySelector('.' + ITEM_OPTIONS_CLASS);
+    buttonsLeft = content.parentNode.querySelector('.' + ITEM_OPTIONS_CLASS) + '.left';
+    buttonsRight = content.parentNode.querySelector('.' + ITEM_OPTIONS_CLASS);
     if(!buttons) {
       return;
     }
-    buttons.classList.remove('invisible');
+    buttonsRight.classList.remove('invisible');
 
-    buttonsWidth = buttons.offsetWidth;
+    buttonsLeftWidth = buttonsLeft.offsetWidth;
+    buttonsRightWidth  = buttonsRight.offsetWidth - buttonsLeft.offsetWidth;
 
     this._currentDrag = {
       buttons: buttons,
-      buttonsWidth: buttonsWidth,
+      buttonsLeftWidth: buttonsLeftWidth,
+      buttonsRightWidth : buttonsRightWidth,
       content: content,
       startOffsetX: offsetX
     };
@@ -115,19 +118,36 @@
     }
 
     if(this._isDragging) {
-      buttonsWidth = this._currentDrag.buttonsWidth;
+      if(e.gesture.deltaX<0){
+        buttonsWidth = this._currentDrag.buttonsRightWidth;
 
-      // Grab the new X point, capping it at zero
-      var newX = Math.min(0, this._currentDrag.startOffsetX + e.gesture.deltaX);
+        // Grab the new X point, capping it at zero
+        var newX = Math.min(0, this._currentDrag.startOffsetX + e.gesture.deltaX);
 
-      // If the new X position is past the buttons, we need to slow down the drag (rubber band style)
-      if(newX < -buttonsWidth) {
-        // Calculate the new X position, capped at the top of the buttons
-        newX = Math.min(-buttonsWidth, -buttonsWidth + (((e.gesture.deltaX + buttonsWidth) * 0.4)));
+        // If the new X position is past the buttons, we need to slow down the drag (rubber band style)
+        if(newX < -buttonsWidth) {
+          // Calculate the new X position, capped at the top of the buttons
+          newX = Math.min(-buttonsWidth, -buttonsWidth + (((e.gesture.deltaX + buttonsWidth) * 0.4)));
+        }
+
+        this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + newX + 'px, 0, 0)';
+        this._currentDrag.content.style[ionic.CSS.TRANSITION] = 'none';
+      }else{
+        buttonsWidth = this._currentDrag.buttonsLeftWidth;
+
+        // Grab the new X point, capping it at zero
+        var newX = Math.max(0, this._currentDrag.startOffsetX + e.gesture.deltaX);
+
+        // If the new X position is past the buttons, we need to slow down the drag (rubber band style)
+        if(newX < -buttonsWidth) {
+          // Calculate the new X position, capped at the top of the buttons
+          newX = Math.min(buttonsWidth, buttonsWidth + (((e.gesture.deltaX + buttonsWidth) * 0.4)));
+        }
+
+        this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + -newX + 'px, 0, 0)';
+        this._currentDrag.content.style[ionic.CSS.TRANSITION] = 'none';
       }
-
-      this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + newX + 'px, 0, 0)';
-      this._currentDrag.content.style[ionic.CSS.TRANSITION] = 'none';
+      
     }
   });
 
