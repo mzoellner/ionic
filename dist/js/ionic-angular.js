@@ -5311,7 +5311,10 @@ IonicModule.directive('ionOptionButton', ['$compile', function($compile) {
 
       $attr.$set('class', ($attr['class'] || '') + ' button', true);
       return function($scope, $element, $attr, itemCtrl) {
-        if($element.hasClass('.left-hidden')){
+        if($element.hasClass('left-hidden')){
+
+
+          
           if (!itemCtrl.leftOptionsContainer) {
             itemCtrl.leftOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS_LEFT);
             itemCtrl.$element.prepend(itemCtrl.leftOptionsContainer);
