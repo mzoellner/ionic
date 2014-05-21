@@ -71,8 +71,12 @@
       
     }
     //buttonsRight.classList.remove('invisible');
-
-    buttonsLeftWidth = buttonsLeft.offsetWidth;
+    if(buttonsLeft){
+      buttonsLeftWidth = buttonsLeft.offsetWidth;
+    }else{
+      buttonsLeftWidth = 0;
+    }
+    
     if(buttonsLeft){
       
       buttonsRightWidth  = buttonsRight[1].offsetWidth;
