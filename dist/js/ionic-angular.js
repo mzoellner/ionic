@@ -5311,17 +5311,16 @@ IonicModule.directive('ionOptionButton', ['$compile', function($compile) {
 
       $attr.$set('class', ($attr['class'] || '') + ' button', true);
       return function($scope, $element, $attr, itemCtrl) {
-        v
         if($element.hasClass('.left-hidden')){
           if (!itemCtrl.leftOptionsContainer) {
             itemCtrl.leftOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS_LEFT);
-            itemCtrl.$element.prepend(itemCtrl.optionsContainer);
+            itemCtrl.$element.prepend(itemCtrl.leftOptionsContainer);
           }
           itemCtrl.leftOptionsContainer.append($element);
         }else{
           if (!itemCtrl.rightOptionsContainer) {
             itemCtrl.rightOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS);
-            itemCtrl.$element.append(itemCtrl.optionsContainer);
+            itemCtrl.$element.append(itemCtrl.rightOptionsContainer);
           }
           itemCtrl.rightOptionsContainer.append($element);
         }

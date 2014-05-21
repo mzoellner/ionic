@@ -6128,8 +6128,8 @@ ionic.scroll = {
   SlideDrag.prototype = new DragOp();
 
   SlideDrag.prototype.start = function(e) {
-    var content, buttons, offsetX, buttonsWidth;
-
+    var content, buttonsLeft,buttonsRight, offsetX, buttonsLeftWidth,buttonsRightWidth;
+    void 0;
     if (!this.canSwipe()) {
       return;
     }
@@ -6154,18 +6154,32 @@ ionic.scroll = {
     offsetX = parseFloat(content.style[ionic.CSS.TRANSFORM].replace('translate3d(', '').split(',')[0]) || 0;
 
     // Grab the buttons
-    buttonsLeft = content.parentNode.querySelector('.' + ITEM_OPTIONS_CLASS) + '.left';
-    buttonsRight = content.parentNode.querySelector('.' + ITEM_OPTIONS_CLASS);
-    if(!buttons) {
+    buttonsLeft = content.parentNode.querySelector('.' + ITEM_OPTIONS_CLASS + '.left') ;
+    buttonsRight = content.parentNode.querySelectorAll('.' + ITEM_OPTIONS_CLASS);
+    if(!buttonsRight) {
       return;
     }
-    buttonsRight.classList.remove('invisible');
+
+    for(var i in buttonsRight){
+      void 0;
+      if(buttonsRight[i].classList){
+        buttonsRight[i].classList.remove('invisible');
+      }
+      
+    }
+    //buttonsRight.classList.remove('invisible');
 
     buttonsLeftWidth = buttonsLeft.offsetWidth;
-    buttonsRightWidth  = buttonsRight.offsetWidth - buttonsLeft.offsetWidth;
-
+    if(buttonsLeft){
+      
+      buttonsRightWidth  = buttonsRight[1].offsetWidth;
+    }else{
+      buttonsRightWidth  = buttonsRight[0].offsetWidth;
+    }
+    
+    
     this._currentDrag = {
-      buttons: buttons,
+      buttons: buttonsRight,
       buttonsLeftWidth: buttonsLeftWidth,
       buttonsRightWidth : buttonsRightWidth,
       content: content,
@@ -6216,12 +6230,14 @@ ionic.scroll = {
 
     if(this._isDragging) {
       if(e.gesture.deltaX<0){
+        this._currentDrag.direction="left";
         buttonsWidth = this._currentDrag.buttonsRightWidth;
 
         // Grab the new X point, capping it at zero
-        var newX = Math.min(0, this._currentDrag.startOffsetX + e.gesture.deltaX);
+        var newX = Math.min(this._currentDrag.buttonsLeftWidth, this._currentDrag.startOffsetX + e.gesture.deltaX);
 
         // If the new X position is past the buttons, we need to slow down the drag (rubber band style)
+        void 0;
         if(newX < -buttonsWidth) {
           // Calculate the new X position, capped at the top of the buttons
           newX = Math.min(-buttonsWidth, -buttonsWidth + (((e.gesture.deltaX + buttonsWidth) * 0.4)));
@@ -6230,18 +6246,19 @@ ionic.scroll = {
         this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + newX + 'px, 0, 0)';
         this._currentDrag.content.style[ionic.CSS.TRANSITION] = 'none';
       }else{
+        this._currentDrag.direction = "right";
         buttonsWidth = this._currentDrag.buttonsLeftWidth;
 
         // Grab the new X point, capping it at zero
-        var newX = Math.max(0, this._currentDrag.startOffsetX + e.gesture.deltaX);
+        var newX = Math.max(-this._currentDrag.buttonsRightWidth, this._currentDrag.startOffsetX + e.gesture.deltaX);
 
         // If the new X position is past the buttons, we need to slow down the drag (rubber band style)
-        if(newX < -buttonsWidth) {
+        if(newX > buttonsWidth) {
           // Calculate the new X position, capped at the top of the buttons
-          newX = Math.min(buttonsWidth, buttonsWidth + (((e.gesture.deltaX + buttonsWidth) * 0.4)));
+          newX = Math.max(buttonsWidth, -buttonsWidth + (((e.gesture.deltaX + buttonsWidth) * 0.4)));
         }
 
-        this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + -newX + 'px, 0, 0)';
+        this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + newX + 'px, 0, 0)';
         this._currentDrag.content.style[ionic.CSS.TRANSITION] = 'none';
       }
       
@@ -6256,30 +6273,49 @@ ionic.scroll = {
       doneCallback && doneCallback();
       return;
     }
+    if(this._currentDrag.direction == "left"){
+      var restingPoint = -this._currentDrag.buttonsRightWidth;
 
+      // Check if the drag didn't clear the buttons mid-point
+      // and we aren't moving fast enough to swipe open
+      if(e.gesture.deltaX > -(this._currentDrag.buttonsRightWidth/2)) {
+
+        // If we are going left but too slow, or going right, go back to resting
+        if(e.gesture.direction == "left" && Math.abs(e.gesture.velocityX) < 0.3) {
+          restingPoint = 0;
+        } else if(e.gesture.direction == "right") {
+          restingPoint = 0;
+        }
+
+      }
+    }else{
+      var restingPoint = this._currentDrag.buttonsLeftWidth;
+
+      // Check if the drag didn't clear the buttons mid-point
+      // and we aren't moving fast enough to swipe open
+      if(e.gesture.deltaX > -(this._currentDrag.buttonsLeftWidth/2)) {
+        // If we are going left but too slow, or going right, go back to resting
+        if(e.gesture.direction == "right" && Math.abs(e.gesture.velocityX) < 0.3) {
+          restingPoint = 0;
+        } else if(e.gesture.direction == "left") {
+          restingPoint = 0;
+        }
+      }
+    }
     // If we are currently dragging, we want to snap back into place
     // The final resting point X will be the width of the exposed buttons
-    var restingPoint = -this._currentDrag.buttonsWidth;
-
-    // Check if the drag didn't clear the buttons mid-point
-    // and we aren't moving fast enough to swipe open
-    if(e.gesture.deltaX > -(this._currentDrag.buttonsWidth/2)) {
-
-      // If we are going left but too slow, or going right, go back to resting
-      if(e.gesture.direction == "left" && Math.abs(e.gesture.velocityX) < 0.3) {
-        restingPoint = 0;
-      } else if(e.gesture.direction == "right") {
-        restingPoint = 0;
-      }
-
-    }
+    
 
     ionic.requestAnimationFrame(function() {
       if(restingPoint === 0) {
         _this._currentDrag.content.style[ionic.CSS.TRANSFORM] = '';
         var buttons = _this._currentDrag.buttons;
         setTimeout(function() {
-          buttons && buttons.classList.add('invisible');
+          for(var i in buttons){
+            if(buttons[i].classList){
+              buttons[i].classList.add('invisible');
+            }
+          }
         }, 250);
       } else {
         _this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + restingPoint + 'px, 0, 0)';
