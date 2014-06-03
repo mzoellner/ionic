@@ -32,7 +32,6 @@
 
   SlideDrag.prototype.start = function(e) {
     var content, buttonsLeft,buttonsRight, offsetX, buttonsLeftWidth,buttonsRightWidth;
-    console.log("hi");
     if (!this.canSwipe()) {
       return;
     }
@@ -130,9 +129,10 @@
 
     // Check if we should start dragging. Check if we've dragged past the threshold,
     // or we are starting from the open state.
+    console.log('Drag',e);
     if(!this._isDragging &&
         ((Math.abs(e.gesture.deltaX) > this.dragThresholdX) ||
-        (Math.abs(this._currentDrag.startOffsetX) > 0)))
+        (Math.abs(this._currentDrag.startOffsetX) > 0)) && (this._currentDrag.content.open === false))
     {
       this._isDragging = true;
     }
@@ -175,7 +175,7 @@
 
   SlideDrag.prototype.end = function(e, doneCallback) {
     var _this = this;
-
+      console.log('END',e);
     // There is no drag, just end immediately
     if(!this._currentDrag) {
       doneCallback && doneCallback();
@@ -225,8 +225,10 @@
             }
           }
         }, 250);
+        _this._currentDrag.content.open = false;
       } else {
         _this._currentDrag.content.style[ionic.CSS.TRANSFORM] = 'translate3d(' + restingPoint + 'px, 0, 0)';
+        _this._currentDrag.content.open = true;
       }
       _this._currentDrag.content.style[ionic.CSS.TRANSITION] = '';
 
@@ -564,9 +566,9 @@
       }
 
       // If we had a last drag operation and this is a new one on a different item, clean that last one
-      if(lastDragOp && this._dragOp && !this._dragOp.isSameItem(lastDragOp) && e.defaultPrevented) {
+     /** if(lastDragOp && this._dragOp && e.defaultPrevented) {
         lastDragOp.clean && lastDragOp.clean();
-      }
+      }**/
     },
 
 
