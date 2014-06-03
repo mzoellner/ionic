@@ -3830,6 +3830,9 @@ a.item-content {
  * Lists
  * --------------------------------------------------
  */
+::-webkit-scrollbar {
+  display: none; }
+
 .list {
   position: relative;
   padding-top: 1px;

@@ -692,7 +692,7 @@ window.ionic = {
     // whatever lookup was done to find this element failed to find it
     // so we can't listen for events on it.
     if(element === null) {
-      void 0;
+      console.error('Null element passed to gesture (element does not exist). Not listening for gesture');
       return;
     }
 
@@ -2064,7 +2064,7 @@ window.ionic = {
      */
     device: function() {
       if(window.device) return window.device;
-      if(this.isWebView()) void 0;
+      if(this.isWebView()) console.error('device plugin required');
       return {};
     },
 
@@ -2676,7 +2676,7 @@ function tapClick(e) {
 
   var c = getPointerCoordinates(e);
 
-  void 0;
+  console.log('tapClick', e.type, ele.tagName, '('+c.x+','+c.y+')');
   triggerMouseEvent('click', ele, c.x, c.y);
 
   // if it's an input, focus in on the target, otherwise blur
@@ -2700,7 +2700,7 @@ function tapClickGateKeeper(e) {
   // do not allow through any click events that were not created by ionic.tap
   if( (ionic.scroll.isScrolling && ionic.tap.containsOrIsTextInput(e.target) ) ||
       (!e.isIonicTap && !ionic.tap.requiresNativeClick(e.target)) ) {
-    void 0;
+    console.log('clickPrevent', e.target.tagName);
     e.stopPropagation();
 
     if( !ionic.tap.isLabelWithTextInput(e.target) ) {
@@ -2716,7 +2716,7 @@ function tapMouseDown(e) {
   if(e.isIonicTap || tapIgnoreEvent(e)) return;
 
   if(tapEnabledTouchEvents) {
-    void 0;
+    console.log('mousedown', 'stop event');
     e.stopPropagation();
 
     if( (!ionic.tap.isTextInput(e.target) || tapLastTouchTarget !== e.target) && !(/^(select|option)$/i).test(e.target.tagName) ) {
@@ -2877,7 +2877,7 @@ function tapHandleFocus(ele) {
 function tapFocusOutActive() {
   var ele = tapActiveElement();
   if(ele && (/^(input|textarea|select)$/i).test(ele.tagName) ) {
-    void 0;
+    console.log('tapFocusOutActive', ele.tagName);
     ele.blur();
   }
   tapActiveElement(null);
@@ -2897,7 +2897,7 @@ function tapFocusIn(e) {
     // 2) There is an active element which is a text input
     // 3) A text input was just set to be focused on by a touch event
     // 4) A new focus has been set, however the target isn't the one the touch event wanted
-    void 0;
+    console.log('focusin', 'tapTouchFocusedInput');
     tapTouchFocusedInput.focus();
     tapTouchFocusedInput = null;
   }
@@ -3403,7 +3403,7 @@ function keyboardShow(element, elementTop, elementBottom, viewportHeight, keyboa
 
   details.contentHeight = viewportHeight - keyboardHeight;
 
-  void 0;
+  console.log('keyboardShow', keyboardHeight, details.contentHeight);
 
   // figure out if the element is under the keyboard
   details.isElementUnderKeyboard = (details.elementBottom > details.contentHeight);
@@ -3433,7 +3433,7 @@ function keyboardFocusOut(e) {
 }
 
 function keyboardHide() {
-  void 0;
+  console.log('keyboardHide');
   ionic.keyboard.isOpen = false;
 
   ionic.trigger('resetScrollView', {
@@ -6136,7 +6136,7 @@ ionic.scroll = {
 
   SlideDrag.prototype.start = function(e) {
     var content, buttonsLeft,buttonsRight, offsetX, buttonsLeftWidth,buttonsRightWidth;
-    void 0;
+    console.log("hi");
     if (!this.canSwipe()) {
       return;
     }
@@ -6168,7 +6168,7 @@ ionic.scroll = {
     }
 
     for(var i in buttonsRight){
-      void 0;
+      console.log(buttonsRight[i].classList);
       if(buttonsRight[i].classList){
         buttonsRight[i].classList.remove('invisible');
       }
@@ -6180,13 +6180,15 @@ ionic.scroll = {
     }else{
       buttonsLeftWidth = 0;
     }
-    
-    if(buttonsLeft){
-      
-      buttonsRightWidth  = buttonsRight[1].offsetWidth;
-    }else{
-      buttonsRightWidth  = buttonsRight[0].offsetWidth;
-    }
+
+        if(buttonsLeft && buttonsRight[1]){
+
+            buttonsRightWidth  = buttonsRight[1].offsetWidth;
+        }else{
+            buttonsRightWidth  = buttonsRight[0].offsetWidth;
+        }
+
+
     
     
     this._currentDrag = {
@@ -6242,13 +6244,12 @@ ionic.scroll = {
     if(this._isDragging) {
       if(e.gesture.deltaX<0){
         this._currentDrag.direction="left";
-        buttonsWidth = this._currentDrag.buttonsRightWidth;
 
         // Grab the new X point, capping it at zero
         var newX = Math.min(this._currentDrag.buttonsLeftWidth, this._currentDrag.startOffsetX + e.gesture.deltaX);
 
         // If the new X position is past the buttons, we need to slow down the drag (rubber band style)
-        void 0;
+        console.log(newX,-buttonsWidth,(((e.gesture.deltaX + buttonsWidth) * 0.4)));
         if(newX < -buttonsWidth) {
           // Calculate the new X position, capped at the top of the buttons
           newX = Math.min(-buttonsWidth, -buttonsWidth + (((e.gesture.deltaX + buttonsWidth) * 0.4)));
@@ -6259,7 +6260,7 @@ ionic.scroll = {
       }else{
         this._currentDrag.direction = "right";
         buttonsWidth = this._currentDrag.buttonsLeftWidth;
-
+        //buttonsWidth = Math.min(this._currentDrag.content.width()-100,buttonsWidth);
         // Grab the new X point, capping it at zero
         var newX = Math.max(-this._currentDrag.buttonsRightWidth, this._currentDrag.startOffsetX + e.gesture.deltaX);
 
@@ -8705,7 +8706,7 @@ var Easing = (function(){
     ionic.extend(this, opts);
 
     if(opts.useSlowAnimations) {
-      void 0;
+      console.warn('Running animation', opts.name, 'with SLOW animations (duration and delay increased by 3x)');
       this.delay *= 3;
       this.duration *= 3;
     }
@@ -8810,7 +8811,7 @@ var Easing = (function(){
       }, function(droppedFrames, finishedAnimation) {
         ionic.Animation.animationStopped(self);
         self.onComplete && self.onComplete(finishedAnimation, droppedFrames);
-        void 0;
+        console.log('Finished anim:', droppedFrames, finishedAnimation);
       }, animState);
     },
 
@@ -8904,10 +8905,10 @@ var Easing = (function(){
 
           var droppedFrames = Math.round((now - lastFrame) / (millisecondsPerSecond / desiredFrames)) - 1;
           if(self._unpausedAnimation) {
-            void 0;
+            console.log('After pausing', droppedFrames, 'Dropped frames');
           }
           for (var j = 0; j < Math.min(droppedFrames, 4); j++) {
-            void 0;
+            console.log('drop step');
             step(true);
             dropCounter++;
           }
@@ -40454,20 +40455,36 @@ IonicModule.directive('ionOptionButton', ['$compile', function($compile) {
 
       $attr.$set('class', ($attr['class'] || '') + ' button', true);
       return function($scope, $element, $attr, itemCtrl) {
+        var totalWidth = $element.closest('ion-item').width();
+        var maxWidth = totalWidth - 100;
         if($element.hasClass('left-hidden')){
 
 
           
           if (!itemCtrl.leftOptionsContainer) {
             itemCtrl.leftOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS_LEFT);
+            console.log(maxWidth);
+            itemCtrl.leftOptionsContainer.css('max-width',maxWidth + 'px');
+            itemCtrl.leftOptionsContainer.css('overflow-x','auto');
+              itemCtrl.leftOptionsContainer.css('overflow-y','hidden');
             itemCtrl.$element.prepend(itemCtrl.leftOptionsContainer);
           }
+          $element.css('float','none');
+          $element.css('display','inline-block');
+          $element.css('white-space','nowrap');
+
           itemCtrl.leftOptionsContainer.append($element);
         }else{
           if (!itemCtrl.rightOptionsContainer) {
             itemCtrl.rightOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS);
+            itemCtrl.rightOptionsContainer.css('max-width',maxWidth + 'px');
+            itemCtrl.rightOptionsContainer.css('overflow-x','auto');
+              itemCtrl.rightOptionsContainer.css('overflow-y','hidden');
             itemCtrl.$element.append(itemCtrl.rightOptionsContainer);
           }
+            $element.css('float','none');
+            $element.css('display','inline-block');
+            $element.css('white-space','nowrap');
           itemCtrl.rightOptionsContainer.append($element);
         }
         $element.on('click',function(e){
@@ -42378,7 +42395,7 @@ function($timeout, $compile, $ionicSlideBoxDelegate) {
       };
 
       this.onPagerClick = function(index) {
-        void 0;
+        console.log('pagerClick', index);
         $scope.pagerClick({index: index});
       };
 

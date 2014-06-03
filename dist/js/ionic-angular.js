@@ -5311,20 +5311,36 @@ IonicModule.directive('ionOptionButton', ['$compile', function($compile) {
 
       $attr.$set('class', ($attr['class'] || '') + ' button', true);
       return function($scope, $element, $attr, itemCtrl) {
+        var totalWidth = $element.closest('ion-item').width();
+        var maxWidth = totalWidth - 100;
         if($element.hasClass('left-hidden')){
 
 
           
           if (!itemCtrl.leftOptionsContainer) {
             itemCtrl.leftOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS_LEFT);
+            console.log(maxWidth);
+            itemCtrl.leftOptionsContainer.css('max-width',maxWidth + 'px');
+            itemCtrl.leftOptionsContainer.css('overflow-x','auto');
+              itemCtrl.leftOptionsContainer.css('overflow-y','hidden');
             itemCtrl.$element.prepend(itemCtrl.leftOptionsContainer);
           }
+          $element.css('float','none');
+          $element.css('display','inline-block');
+          $element.css('white-space','nowrap');
+
           itemCtrl.leftOptionsContainer.append($element);
         }else{
           if (!itemCtrl.rightOptionsContainer) {
             itemCtrl.rightOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS);
+            itemCtrl.rightOptionsContainer.css('max-width',maxWidth + 'px');
+            itemCtrl.rightOptionsContainer.css('overflow-x','auto');
+              itemCtrl.rightOptionsContainer.css('overflow-y','hidden');
             itemCtrl.$element.append(itemCtrl.rightOptionsContainer);
           }
+            $element.css('float','none');
+            $element.css('display','inline-block');
+            $element.css('white-space','nowrap');
           itemCtrl.rightOptionsContainer.append($element);
         }
         $element.on('click',function(e){
@@ -7235,7 +7251,7 @@ function($timeout, $compile, $ionicSlideBoxDelegate) {
       };
 
       this.onPagerClick = function(index) {
-        void 0;
+        console.log('pagerClick', index);
         $scope.pagerClick({index: index});
       };
 

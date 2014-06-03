@@ -76,13 +76,15 @@
     }else{
       buttonsLeftWidth = 0;
     }
-    
-    if(buttonsLeft){
-      
-      buttonsRightWidth  = buttonsRight[1].offsetWidth;
-    }else{
-      buttonsRightWidth  = buttonsRight[0].offsetWidth;
-    }
+
+        if(buttonsLeft && buttonsRight[1]){
+
+            buttonsRightWidth  = buttonsRight[1].offsetWidth;
+        }else{
+            buttonsRightWidth  = buttonsRight[0].offsetWidth;
+        }
+
+
     
     
     this._currentDrag = {
@@ -138,7 +140,6 @@
     if(this._isDragging) {
       if(e.gesture.deltaX<0){
         this._currentDrag.direction="left";
-        buttonsWidth = this._currentDrag.buttonsRightWidth;
 
         // Grab the new X point, capping it at zero
         var newX = Math.min(this._currentDrag.buttonsLeftWidth, this._currentDrag.startOffsetX + e.gesture.deltaX);
@@ -155,7 +156,7 @@
       }else{
         this._currentDrag.direction = "right";
         buttonsWidth = this._currentDrag.buttonsLeftWidth;
-
+        //buttonsWidth = Math.min(this._currentDrag.content.width()-100,buttonsWidth);
         // Grab the new X point, capping it at zero
         var newX = Math.max(-this._currentDrag.buttonsRightWidth, this._currentDrag.startOffsetX + e.gesture.deltaX);
 
