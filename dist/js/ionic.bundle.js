@@ -1818,8 +1818,8 @@ window.ionic = {
           inst.trigger(this.name + ev.direction, ev);
 
           // block the browser events
-          if( (inst.options.drag_block_vertical && ionic.Gestures.utils.isVertical(ev.direction)) ||
-              (inst.options.drag_block_horizontal && !ionic.Gestures.utils.isVertical(ev.direction))) {
+          if( (inst.options.drag_block_vertical && ionic.Gestures.utils.isVertical(ev.direction)) /**||
+              (inst.options.drag_block_horizontal && !ionic.Gestures.utils.isVertical(ev.direction))**/) {
                 ev.preventDefault();
               }
           break;
@@ -38890,7 +38890,10 @@ function($scope, scrollViewOptions, $timeout, $window, $$scrollValueCache, $loca
       scrollLeft: detail.scrollLeft || 0
     });
   });
-
+  $element.on('drag',function(e){
+      var pos = self.getScrollPosition();
+      self.scrollTo(pos.left - e.originalEvent.gesture.deltaX,pos.top,false);
+  })
   $scope.$on('$viewContentLoaded', function(e, historyData) {
     //only the top-most scroll area under a view should remember that view's
     //scroll position
@@ -40415,8 +40418,8 @@ IonicModule
 }]);
 
 var ITEM_TPL_OPTION_BUTTONS_LEFT =
-  '<div class="item-options invisible left">' +
-  '</div>';
+  '<ion-scroll class="item-options invisible left" direction="x"   >' +
+  '</ion-scroll>';
 var ITEM_TPL_OPTION_BUTTONS =
   '<div class="item-options invisible">' +
   '</div>';
@@ -40464,24 +40467,22 @@ IonicModule.directive('ionOptionButton', ['$compile', function($compile) {
 
           
           if (!itemCtrl.leftOptionsContainer) {
-            itemCtrl.leftOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS_LEFT);
-            console.log(maxWidth);
-            itemCtrl.leftOptionsContainer.css('max-width',maxWidth + 'px');
-            itemCtrl.leftOptionsContainer.css('overflow-x','auto');
-              itemCtrl.leftOptionsContainer.css('overflow-y','hidden');
+            itemCtrl.leftOptionsContainer = $compile(angular.element(ITEM_TPL_OPTION_BUTTONS_LEFT))($scope);
+            itemCtrl.leftOptionsContainer.find('.scroll').css('height','100%');
             itemCtrl.$element.prepend(itemCtrl.leftOptionsContainer);
           }
           $element.css('float','none');
           $element.css('display','inline-block');
           $element.css('white-space','nowrap');
-
-          itemCtrl.leftOptionsContainer.append($element);
+          if(itemCtrl.leftOptionsContainer.width()>maxWidth){
+              itemCtrl.leftOptionsContainer.width(maxWidth);
+          }
+          itemCtrl.leftOptionsContainer.find('.scroll').append($element);
         }else{
           if (!itemCtrl.rightOptionsContainer) {
             itemCtrl.rightOptionsContainer = angular.element(ITEM_TPL_OPTION_BUTTONS);
             itemCtrl.rightOptionsContainer.css('max-width',maxWidth + 'px');
-            itemCtrl.rightOptionsContainer.css('overflow-x','auto');
-              itemCtrl.rightOptionsContainer.css('overflow-y','hidden');
+
             itemCtrl.$element.append(itemCtrl.rightOptionsContainer);
           }
             $element.css('float','none');
