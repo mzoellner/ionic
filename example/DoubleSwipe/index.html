@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>GPX Prototypes</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+    <link href="dist/css/ionic.css" rel="stylesheet">
+
+    <script src="dist/js/ionic.bundle.js"></script>
+    <script src="jquery.min.js"></script>
+    <script src="app.js"></script>
+</head>
+
+    <body ng-app="double-swipe">
+
+    <ion-list can-swipe="canSwipeItems" swipe-direction="left" ng-controller="doubleSwipeController">
+        <ion-item ng-repeat="message in messages" class="item item-avatar">
+            <ion-option-button class="button-positive left-hidden" ng-click="share(item)">To Contacts</ion-option-button>
+            <ion-option-button class="button-positive left-hidden" ng-click="share(item)">To Contacts</ion-option-button>
+            <ion-option-button class="button-positive left-hidden" ng-click="share(item)">To Contacts</ion-option-button>
+            <ion-option-button class="button-positive left-hidden" ng-click="share(item)">To Contacts</ion-option-button>
+            <ion-option-button class="button-positive left-hidden" ng-click="share(item)">To Contacts</ion-option-button>
+
+            <img src="res/message.png" style="width:40px; height:40px;">
+            <a ui-sref=".conversation">
+                <h2>{{ message.title }}</h2>
+                <p>{{ message.body }}</p>
+            </a>
+            
+            <ion-option-button class="button-balanced" ng-click="share(item)">Call</ion-option-button>
+            <ion-option-button class="button-balanced" ng-click="share(item)">Call</ion-option-button>
+            <ion-option-button class="button-balanced" ng-click="share(item)">Call</ion-option-button>
+            <ion-option-button class="button-balanced" ng-click="share(item)">Call</ion-option-button>
+            <ion-option-button class="button-balanced" ng-click="share(item)">Call</ion-option-button>
+        </ion-item>
+    </ion-list>
+
+    </body>
+</html>
