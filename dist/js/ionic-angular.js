@@ -6251,7 +6251,7 @@ function($ionicViewService, $rootScope, $animate, $compile, $ionicNavBarConfig) 
         $scope.backButtonShown = false;
         $scope.shouldAnimate = true;
         $scope.isReverse = false;
-        $scope.isInvisible = true;
+        $scope.isInvisible = false;
 
         $scope.$on('$destroy', function() {
           $scope.$parent.$hasHeader = false;
