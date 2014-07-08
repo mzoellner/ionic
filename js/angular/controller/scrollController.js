@@ -78,7 +78,7 @@ function($scope, scrollViewOptions, $timeout, $window, $$scrollValueCache, $loca
   });
   $element.on('drag',function(e){
       var pos = self.getScrollPosition();
-      self.scrollTo(pos.left - e.originalEvent.gesture.deltaX,pos.top,false);
+      self.scrollTo(pos.left - e.gesture.deltaX,pos.top,false);
   })
   $scope.$on('$viewContentLoaded', function(e, historyData) {
     //only the top-most scroll area under a view should remember that view's

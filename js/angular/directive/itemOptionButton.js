@@ -41,7 +41,7 @@ IonicModule.directive('ionOptionButton', ['$compile', function($compile) {
 
       $attr.$set('class', ($attr['class'] || '') + ' button', true);
       return function($scope, $element, $attr, itemCtrl) {
-        var totalWidth = $element.closest('ion-item').width();
+        var totalWidth = $($element).closest('ion-item').width();
         var maxWidth = totalWidth - 100;
         if($element.hasClass('left-hidden')){
 
