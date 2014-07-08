@@ -3,7 +3,9 @@
  * Lists
  * --------------------------------------------------
  */
-
+::-webkit-scrollbar {
+  display: none;
+}
 .list {
   position: relative;
   padding-top: $item-border-width;
